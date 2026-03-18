@@ -2,6 +2,10 @@
 
 2007 first OAuth 1.0 released
 
+## Use cases
+
+One of them is single sign on for multiple apps
+
 ## Request Params
 
 ### response_type 

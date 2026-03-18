@@ -5,8 +5,22 @@ import (
 	"net/http"
 )
 
+var sessions = make(map[string]string)
+
 func main() {
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		sessionID := "some_cookie"
+
+		sessions[sessionID] = "user_1"
+
+		http.SetCookie(w, &http.Cookie{
+			Name:  "session_id",
+			Value: sessionID,
+			Path:  "/",
+		})
+	})
 
 	mux.HandleFunc("/oauth/authorize", func(w http.ResponseWriter, r *http.Request) {
 		clients := getClients()
@@ -30,8 +44,8 @@ func main() {
 			return
 		}
 
-		cookie, err := r.Cookie("session_id")
-		if err != nil || cookie.Value == "" {
+		userID, err := getUserFromRequest(r)
+		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
@@ -45,4 +59,18 @@ func getClients() map[string]string {
 	return map[string]string{
 		"web_client": "http://localhost:8081/callback",
 	}
+}
+
+func getUserFromRequest(r *http.Request) (string, error) {
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie.Value == "" {
+		return "", fmt.Errorf("no session")
+	}
+
+	userID, ok := sessions[cookie.Value]
+	if !ok {
+		return "", fmt.Errorf("invalid session")
+	}
+
+	return userID, nil
 }
