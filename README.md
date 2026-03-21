@@ -47,3 +47,12 @@ Then you will be able to get from `/oauth/token` id token as well.
   "expires_in": 3600
 }
 ```
+
+## More Terminology
+
+* Resource Owner: The user
+* User Agent: Device
+* OAuth Client: The applicaition
+* Resource Server: The API
+
+ 
