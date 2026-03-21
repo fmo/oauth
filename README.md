@@ -26,6 +26,24 @@ Your APIs
 
 ## OAuth vs OpenID Connect
 
-OAuth issues access tokens to your app, opendID Connect issues id tokens to your app. 
-
 OpenID Connect is a extension to OAuth.
+
+You call first `/oauth/authorize` then you will get a `code` but if you indicate in the call you will need an openid token then:
+
+```
+GET /authorize?
+  response_type=code
+  &client_id=...
+  &scope=openid email profile
+```
+
+Then you will be able to get from `/oauth/token` id token as well.
+
+```
+{
+  "access_token": "xyz123",
+  "id_token": "jwt_token_here",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
