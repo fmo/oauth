@@ -11,6 +11,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	clientID := r.URL.Query().Get("client_id")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	responseType := r.URL.Query().Get("response_type")
+	scope := r.URL.Query().Get("scope")
 
 	if _, ok := a.Clients[clientID]; !ok {
 		http.Error(w, "client is not defined", http.StatusBadRequest)
@@ -35,7 +36,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	code, _ := internal.GenerateCode()
-	internal.StoreCode(code, userID, clientID, redirectURI)
+	internal.StoreCode(code, userID, clientID, redirectURI, scope)
 
 	redirect := redirectURI + "?code=" + code
 	http.Redirect(w, r, redirect, http.StatusFound)

@@ -7,6 +7,7 @@ type AuthCode struct {
 	ClientID    string
 	RedirectURI string
 	ExpiresAt   time.Time
+	Scope       string
 }
 
 type Client struct {

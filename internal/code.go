@@ -23,12 +23,13 @@ func GenerateCode() (string, error) {
 	return code, nil
 }
 
-func StoreCode(code, userID, clientID, redirectURI string) {
+func StoreCode(code, userID, clientID, redirectURI, scope string) {
 	codeStore[code] = AuthCode{
 		UserID:      userID,
 		ClientID:    clientID,
 		RedirectURI: redirectURI,
 		ExpiresAt:   time.Now().Add(2 * time.Minute),
+		Scope:       scope,
 	}
 }
 
