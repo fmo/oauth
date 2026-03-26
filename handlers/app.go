@@ -11,13 +11,19 @@ type App struct {
 	Sessions map[string]string
 	Clients  map[string]internal.Client
 	Codes    map[string]internal.AuthCode
+	Users    map[string]string
 }
 
 func NewApp() *App {
+	users := map[string]string{
+		"fmo": "123123",
+	}
+
 	return &App{
 		Sessions: make(map[string]string),
 		Clients:  internal.GetClients(),
 		Codes:    make(map[string]internal.AuthCode),
+		Users:    users,
 	}
 }
 

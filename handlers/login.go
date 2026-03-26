@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"text/template"
 )
@@ -14,11 +13,22 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == "POST" {
-		username := r.FormValue("username")
-		password := r.FormValue("password")
+	if r.Method != "POST" {
+		http.Error(w, "wrong method call", http.StatusBadRequest)
+		return
+	}
 
-		fmt.Println(username, password)
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	if _, ok := a.Users[username]; !ok {
+		http.Error(w, "wrong username", http.StatusUnauthorized)
+		return
+	}
+
+	if a.Users[username] != password {
+		http.Error(w, "wrong password", http.StatusUnauthorized)
+		return
 	}
 
 	sessionID, err := newSessionID()
@@ -27,7 +37,7 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a.Sessions[sessionID] = "user_1"
+	a.Sessions[sessionID] = username
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
