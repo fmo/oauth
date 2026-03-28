@@ -1,18 +1,36 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
+	"net/url"
 	"text/template"
 )
 
 func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		log.Println(r.URL.Query().Get("response_type"))
+		responseType := r.URL.Query().Get("response_type")
+		redirectURI := r.URL.Query().Get("redirect_uri")
+		clientID := r.URL.Query().Get("client_id")
+		scope := r.URL.Query().Get("scope")
+
+		u, _ := url.Parse("/login")
+
+		q := u.Query()
+		q.Set("client_id", clientID)
+		q.Set("response_type", responseType)
+		q.Set("redirect_uri", redirectURI)
+		q.Set("scope", scope)
+
+		u.RawQuery = q.Encode()
 
 		template, _ := template.ParseFiles("templates/login.html")
 
-		template.Execute(w, nil)
+		template.Execute(w, struct {
+			SubmitURI string
+		}{
+			SubmitURI: u.String(),
+		})
+
 		return
 	}
 
