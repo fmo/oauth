@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/fmo/oauth/handlers"
+	"github.com/fmo/oauth/internal/handlers"
 )
 
 func main() {
