@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"net/http"
-	"net/url"
 	"text/template"
+
+	"github.com/fmo/oauth/internal"
 )
 
 func (a *App) Login(w http.ResponseWriter, r *http.Request) {
@@ -13,22 +14,14 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 		clientID := r.URL.Query().Get("client_id")
 		scope := r.URL.Query().Get("scope")
 
-		u, _ := url.Parse("/login")
-
-		q := u.Query()
-		q.Set("client_id", clientID)
-		q.Set("response_type", responseType)
-		q.Set("redirect_uri", redirectURI)
-		q.Set("scope", scope)
-
-		u.RawQuery = q.Encode()
+		loginURI := internal.CreateLoginURI(clientID, responseType, redirectURI, scope)
 
 		template, _ := template.ParseFiles("templates/login.html")
 
 		template.Execute(w, struct {
 			SubmitURI string
 		}{
-			SubmitURI: u.String(),
+			SubmitURI: loginURI,
 		})
 
 		return

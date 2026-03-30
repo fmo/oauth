@@ -1,9 +1,7 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/fmo/oauth/internal"
 )
@@ -30,18 +28,10 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get user
-	userID, err := a.getUserFromRequest(r)
+	userID, err := internal.GetUserFromRequest(r, a.Sessions)
 	if err != nil {
-		u, _ := url.Parse("/login")
-		q := u.Query()
-		q.Set("client_id", clientID)
-		q.Set("response_type", responseType)
-		q.Set("redirect_uri", redirectURI)
-		q.Set("scope", scope)
-
-		u.RawQuery = q.Encode()
-
-		http.Redirect(w, r, u.String(), http.StatusFound)
+		loginURI := internal.CreateLoginURI(clientID, responseType, redirectURI, scope)
+		http.Redirect(w, r, loginURI, http.StatusFound)
 		return
 	}
 
@@ -50,18 +40,4 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 
 	redirect := redirectURI + "?code=" + code
 	http.Redirect(w, r, redirect, http.StatusFound)
-}
-
-func (a *App) getUserFromRequest(r *http.Request) (string, error) {
-	cookie, err := r.Cookie("session_id")
-	if err != nil || cookie.Value == "" {
-		return "", fmt.Errorf("no session")
-	}
-
-	userID, ok := a.Sessions[cookie.Value]
-	if !ok {
-		return "", fmt.Errorf("invalid session")
-	}
-
-	return userID, nil
 }
