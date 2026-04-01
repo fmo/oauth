@@ -35,6 +35,8 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
+	redirectURI := r.URL.Query().Get("redirect_uri")
+
 	if _, ok := a.Users[username]; !ok {
 		http.Error(w, "wrong username", http.StatusUnauthorized)
 		return
@@ -61,4 +63,6 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 	})
+
+	http.Redirect(w, r, redirectURI, http.StatusFound)
 }

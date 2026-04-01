@@ -15,6 +15,7 @@ func main() {
 	mux.HandleFunc("/login", app.Login)
 	mux.HandleFunc("/oauth/authorize", app.Authorize)
 	mux.HandleFunc("/oauth/token", app.Token)
+	mux.HandleFunc("/oauth/sessions", app.ListSessions)
 
 	fmt.Println("server runs on 8080")
 	http.ListenAndServe(":8080", mux)
