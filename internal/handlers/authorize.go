@@ -30,7 +30,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	// get user
 	userID, err := internal.GetUserFromRequest(r, a.Sessions)
 	if err != nil {
-		loginURI := internal.CreateLoginURI(clientID, responseType, redirectURI, scope)
+		loginURI := internal.CreateURI("/login", clientID, responseType, redirectURI, scope)
 		http.Redirect(w, r, loginURI, http.StatusFound)
 		return
 	}

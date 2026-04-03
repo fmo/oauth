@@ -20,8 +20,8 @@ func GetUserFromRequest(r *http.Request, sessions map[string]string) (string, er
 	return userID, nil
 }
 
-func CreateLoginURI(clientID, responseType, redirectURI, scope string) string {
-	u, _ := url.Parse("/login")
+func CreateURI(base, clientID, responseType, redirectURI, scope string) string {
+	u, _ := url.Parse(base)
 	q := u.Query()
 	q.Set("client_id", clientID)
 	q.Set("response_type", responseType)

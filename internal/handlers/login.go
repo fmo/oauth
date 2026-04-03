@@ -8,13 +8,13 @@ import (
 )
 
 func (a *App) Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		responseType := r.URL.Query().Get("response_type")
-		redirectURI := r.URL.Query().Get("redirect_uri")
-		clientID := r.URL.Query().Get("client_id")
-		scope := r.URL.Query().Get("scope")
+	responseType := r.URL.Query().Get("response_type")
+	redirectURI := r.URL.Query().Get("redirect_uri")
+	clientID := r.URL.Query().Get("client_id")
+	scope := r.URL.Query().Get("scope")
 
-		loginURI := internal.CreateLoginURI(clientID, responseType, redirectURI, scope)
+	if r.Method == "GET" {
+		loginURI := internal.CreateURI("/login", clientID, responseType, redirectURI, scope)
 
 		template, _ := template.ParseFiles("templates/login.html")
 
@@ -34,8 +34,6 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-
-	redirectURI := r.URL.Query().Get("redirect_uri")
 
 	if _, ok := a.Users[username]; !ok {
 		http.Error(w, "wrong username", http.StatusUnauthorized)
@@ -64,5 +62,7 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 	})
 
-	http.Redirect(w, r, redirectURI, http.StatusFound)
+	l := internal.CreateURI("/oauth/authorize", clientID, responseType, redirectURI, scope)
+
+	http.Redirect(w, r, l, http.StatusFound)
 }
