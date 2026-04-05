@@ -55,4 +55,31 @@ Then you will be able to get from `/oauth/token` id token as well.
 * OAuth Client: The applicaition
 * Resource Server: The API
 
- 
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Browser
+    participant AuthServer
+
+    Client->>Browser: Open /oauth/authorize\n(client_id, redirect_uri, scope, state)
+    Browser->>AuthServer: GET /oauth/authorize
+
+    alt No session cookie
+        AuthServer-->>Browser: Redirect to /login
+
+        Browser->>AuthServer: POST /login (username, password)
+        AuthServer-->>Browser: Set session cookie + redirect back to /authorize
+    end
+
+    Browser->>AuthServer: GET /oauth/authorize (again with session)
+
+    alt User consent required
+        AuthServer-->>Browser: Show consent screen
+        Browser->>AuthServer: Submit consent (approve)
+    end
+
+    AuthServer-->>Browser: Redirect to redirect_uri?code=XYZ&state=ABC
+    Browser-->>Client: Return with authorization code
+```
