@@ -3,7 +3,16 @@ package internal
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"time"
 )
+
+type AuthCode struct {
+	UserID      string
+	ClientID    string
+	RedirectURI string
+	ExpiresAt   time.Time
+	Scope       string
+}
 
 func GenerateCode() (string, error) {
 	b := make([]byte, 32) // 256-bit
