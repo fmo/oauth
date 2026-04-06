@@ -12,6 +12,7 @@ type App struct {
 	Clients  map[string]Client
 	Codes    map[string]AuthCode
 	Users    map[string]string
+	Consents map[string]Consent
 }
 
 type Client struct {
@@ -28,7 +29,6 @@ type AuthCode struct {
 }
 
 type Consent struct {
-	UserID   string
 	ClientID string
 	Scope    string
 }
@@ -45,11 +45,14 @@ func NewApp() *App {
 		},
 	}
 
+	consents := map[string]Consent{}
+
 	return &App{
 		Sessions: make(map[string]string),
 		Clients:  clients,
 		Codes:    make(map[string]AuthCode),
 		Users:    users,
+		Consents: consents,
 	}
 }
 
