@@ -34,6 +34,12 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, ok := a.Consents[userID]; !ok {
+		consentURI := CreateURI("/consent", clientID, responseType, redirectURI, scope, state)
+		http.Redirect(w, r, consentURI, http.StatusFound)
+		return
+	}
+
 	// generate code
 	code, err := a.GenerateCode()
 	if err != nil {

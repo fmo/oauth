@@ -13,6 +13,7 @@ func main() {
 	app := handlers.NewApp()
 
 	mux.HandleFunc("/login", app.Login)
+	mux.HandleFunc("/consent", app.Consent)
 	mux.HandleFunc("/oauth/authorize", app.Authorize)
 	mux.HandleFunc("/oauth/token", app.Token)
 	mux.HandleFunc("/oauth/sessions", app.ListSessions)
