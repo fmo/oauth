@@ -1,8 +1,8 @@
+// Package handlers take care of requests
 package handlers
 
 import (
 	"net/http"
-	"net/url"
 )
 
 func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
@@ -12,16 +12,15 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	scope := r.URL.Query().Get("scope")
 	state := r.URL.Query().Get("state")
 
+	// validate
 	if _, ok := a.Clients[clientID]; !ok {
 		http.Error(w, "client is not defined", http.StatusBadRequest)
 		return
 	}
-
 	if a.Clients[clientID].RedirectURI != redirectURI {
 		http.Error(w, "redirect url is not matching", http.StatusBadRequest)
 		return
 	}
-
 	if responseType != "code" {
 		http.Error(w, "response type is not valid", http.StatusBadRequest)
 		return
@@ -35,6 +34,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// generate code
 	code, err := a.GenerateCode()
 	if err != nil {
 		http.Error(w, "cant generate code", http.StatusInternalServerError)
@@ -42,12 +42,9 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	}
 	a.StoreCode(code, userID, clientID, redirectURI, scope)
 
-	u, _ := url.Parse(redirectURI)
-	q := u.Query()
-	q.Add("code", code)
-	q.Add("state", state)
+	// create redirect uri
+	rduri := CreateRedirectURI(redirectURI, code, state)
 
-	u.RawQuery = q.Encode()
-
-	http.Redirect(w, r, u.String(), http.StatusFound)
+	// return back to client
+	http.Redirect(w, r, rduri, http.StatusFound)
 }
