@@ -37,7 +37,7 @@ func NewApp() *App {
 
 	clients := map[string]Client{
 		"web_client": Client{
-			Secret:      "axaa",
+			Secret:      "demo-client-secret",
 			RedirectURI: "http://localhost:8081/callback",
 		},
 	}
