@@ -6,6 +6,12 @@
 
 One of them is single sign on for multiple apps
 
+## Example Client
+
+An example client for this auth server is here:
+
+https://github.com/fmo/oauth2_client
+
 ## Request Params for /oauth/authorize
 
 ### response_type 
