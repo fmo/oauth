@@ -32,11 +32,19 @@ func (a *App) Token(w http.ResponseWriter, r *http.Request) {
 			"expires_in": 3600
 		}`))
 	case "authorization_code":
-		_, err := a.ConsumeCode(code, clientID, redirectURI)
+		authCode, err := a.ConsumeCode(code, clientID, redirectURI)
 		if err != nil {
 			http.Error(w, "code is wrong", http.StatusUnauthorized)
 			return
 		}
+
+		token, err := a.GenerateCode()
+		if err != nil {
+			http.Error(w, "cant generate token", http.StatusInternalServerError)
+			return
+		}
+
+		a.StoreToken(token, authCode.UserID, authCode.ClientID, authCode.Scope)
 
 		isOIDC := true
 

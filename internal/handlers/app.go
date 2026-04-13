@@ -5,11 +5,12 @@ import (
 )
 
 type App struct {
-	Sessions map[string]string
-	Clients  map[string]Client
-	Codes    map[string]AuthCode
-	Users    map[string]string
-	Consents map[string]Consent
+	Sessions     map[string]string
+	Clients      map[string]Client
+	Codes        map[string]AuthCode
+	Users        map[string]string
+	Consents     map[string]Consent
+	AccessTokens map[string]AccessToken
 }
 
 type Client struct {
@@ -30,6 +31,13 @@ type Consent struct {
 	Scope    string
 }
 
+type AccessToken struct {
+	UserID    string
+	ClientID  string
+	Scope     string
+	ExpiresAt time.Time
+}
+
 func NewApp() *App {
 	users := map[string]string{
 		"fmo": "123123",
@@ -44,11 +52,14 @@ func NewApp() *App {
 
 	consents := map[string]Consent{}
 
+	accessTokens := map[string]AccessToken{}
+
 	return &App{
-		Sessions: make(map[string]string),
-		Clients:  clients,
-		Codes:    make(map[string]AuthCode),
-		Users:    users,
-		Consents: consents,
+		Sessions:     make(map[string]string),
+		Clients:      clients,
+		Codes:        make(map[string]AuthCode),
+		Users:        users,
+		Consents:     consents,
+		AccessTokens: accessTokens,
 	}
 }

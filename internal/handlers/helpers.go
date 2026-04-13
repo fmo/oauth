@@ -64,6 +64,15 @@ func (a *App) GenerateCode() (string, error) {
 	return code, nil
 }
 
+func (a *App) StoreToken(token, userID, clientID, scope string) {
+	a.AccessTokens[token] = AccessToken{
+		UserID:    userID,
+		ClientID:  clientID,
+		Scope:     scope,
+		ExpiresAt: time.Now().Add(60 * time.Minute),
+	}
+}
+
 func (a *App) StoreCode(code, userID, clientID, redirectURI, scope string) {
 	a.Codes[code] = AuthCode{
 		UserID:      userID,
