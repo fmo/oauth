@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func (a *App) Token(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +66,22 @@ func (a *App) Token(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if isOIDC {
-			resp["id_token"] = "bla bla"
+			claims := jwt.MapClaims{
+				"sub": authCode.UserID,
+				"iss": "localhost:8080",
+				"aud": clientID,
+				"exp": time.Now().Add(time.Hour).Unix(),
+				"iat": time.Now().Unix(),
+			}
+
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+			idToken, err := token.SignedString([]byte("my-secret"))
+			if err != nil {
+				http.Error(w, "cant create id token", http.StatusInternalServerError)
+				return
+			}
+
+			resp["id_token"] = idToken
 		}
 
 		w.Header().Set("Content-Type", "application/json")
