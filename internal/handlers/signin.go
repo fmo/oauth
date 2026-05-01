@@ -7,7 +7,6 @@ import (
 )
 
 func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
-	slog.Info("")
 	slog.Info("===== Signin Handler =====")
 
 	slog.Info("Getting uri params")
@@ -18,14 +17,14 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 
 	if r.Method == "GET" {
-		loginURI := CreateURI("/login", clientID, responseType, redirectURI, scope, state)
+		signinURI := CreateURI("/signin", clientID, responseType, redirectURI, scope, state)
 
-		template, _ := template.ParseFiles("templates/login.html")
+		template, _ := template.ParseFiles("templates/signin.html")
 
 		template.Execute(w, struct {
 			SubmitURI string
 		}{
-			SubmitURI: loginURI,
+			SubmitURI: signinURI,
 		})
 
 		return

@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
@@ -12,11 +13,13 @@ import (
 func GetUserFromRequest(r *http.Request, sessions map[string]string) (string, error) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie.Value == "" {
+		slog.Info("Session cookie not found")
 		return "", fmt.Errorf("no session")
 	}
 
 	userID, ok := sessions[cookie.Value]
 	if !ok {
+		slog.Info("Session cookie exists but not in the system")
 		return "", fmt.Errorf("invalid session")
 	}
 
