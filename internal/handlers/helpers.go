@@ -10,10 +10,10 @@ import (
 	"time"
 )
 
-func GetUserFromRequest(r *http.Request, sessions map[string]string) (string, error) {
+func (a *App) GetUserFromRequest(r *http.Request, sessions map[string]string) (string, error) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie.Value == "" {
-		slog.Info("Session cookie not found")
+		a.Logger.Info("Session cookie not found")
 		return "", fmt.Errorf("no session")
 	}
 

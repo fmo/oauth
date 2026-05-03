@@ -2,14 +2,13 @@
 package handlers
 
 import (
-	"log/slog"
 	"net/http"
 )
 
 func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	a.Logger.Info("===== Authorize Handler =====")
 
-	slog.Info("Getting uri parameters")
+	a.Logger.Info("Getting uri parameters")
 	clientID := r.URL.Query().Get("client_id")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	responseType := r.URL.Query().Get("response_type")
@@ -26,28 +25,29 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "redirect url is not matching", http.StatusBadRequest)
 		return
 	}
-	slog.Info("Redirect url is matching")
+	a.Logger.Info("Redirect url is matching")
 
 	if responseType != "code" {
 		http.Error(w, "response type is not valid", http.StatusBadRequest)
 		return
 	}
-	slog.Info("Response type is code as expected")
+	a.Logger.Info("Response type is code as expected")
 
-	userID, err := GetUserFromRequest(r, a.Sessions)
+	userID, err := a.GetUserFromRequest(r, a.Sessions)
 	if err != nil {
-		slog.Info("Session has not started, redirecting to signin page")
+		a.Logger.Info("Session has not started, redirecting to signin page")
 		loginURI := CreateURI("/signin", clientID, responseType, redirectURI, scope, state)
 		http.Redirect(w, r, loginURI, http.StatusFound)
 		return
 	}
-	slog.Info("User already signed in")
+	a.Logger.Info("User already signed in")
 
 	if _, ok := a.Consents[userID]; !ok {
 		consentURI := CreateURI("/consent", clientID, responseType, redirectURI, scope, state)
 		http.Redirect(w, r, consentURI, http.StatusFound)
 		return
 	}
+	a.Logger.Info("Consent is already given")
 
 	code, err := a.GenerateCode()
 	if err != nil {
@@ -55,8 +55,10 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a.StoreCode(code, userID, clientID, redirectURI, scope)
+	a.Logger.Info("Code is generated and stored in the system")
 
 	rduri := CreateRedirectURI(redirectURI, code, state)
 
+	a.Logger.Info("Redirecting back to Client with code")
 	http.Redirect(w, r, rduri, http.StatusFound)
 }

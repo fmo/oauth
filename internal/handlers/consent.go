@@ -13,7 +13,7 @@ func (a *App) Consent(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 
 	if r.Method == "POST" {
-		userID, err := GetUserFromRequest(r, a.Sessions)
+		userID, err := a.GetUserFromRequest(r, a.Sessions)
 		if err != nil {
 			loginURI := CreateURI("/login", clientID, responseType, redirectURI, scope, state)
 			http.Redirect(w, r, loginURI, http.StatusFound)
