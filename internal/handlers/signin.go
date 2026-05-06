@@ -1,15 +1,14 @@
 package handlers
 
 import (
-	"log/slog"
 	"net/http"
 	"text/template"
 )
 
 func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
-	slog.Info("===== Signin Handler =====")
+	a.Logger.Info("===== Signin Handler =====")
 
-	slog.Info("Getting uri params")
+	a.Logger.Info("Getting uri params")
 	responseType := r.URL.Query().Get("response_type")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	clientID := r.URL.Query().Get("client_id")
@@ -17,10 +16,13 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 
 	if r.Method == "GET" {
+		a.Logger.Info("Creating signing uri")
 		signinURI := CreateURI("/signin", clientID, responseType, redirectURI, scope, state)
 
-		template, _ := template.ParseFiles("templates/signin.html")
+		a.Logger.Debug("Signin uri: %s", signinURI)
 
+		a.Logger.Info("Rendering signing template")
+		template, _ := template.ParseFiles("templates/signin.html")
 		template.Execute(w, struct {
 			SubmitURI string
 		}{
@@ -35,6 +37,7 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	a.Logger.Info("Reading form values username and password")
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -42,20 +45,25 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "wrong username", http.StatusUnauthorized)
 		return
 	}
+	a.Logger.Info("Username found")
 
 	if a.Users[username] != password {
 		http.Error(w, "wrong password", http.StatusUnauthorized)
 		return
 	}
+	a.Logger.Info("Password matching")
 
 	sessionID, err := newSessionID()
 	if err != nil {
 		http.Error(w, "could not create session", http.StatusInternalServerError)
 		return
 	}
+	a.Logger.Info("Generated session id")
 
+	a.Logger.Info("Recoreded session id to the system")
 	a.Sessions[sessionID] = username
 
+	a.Logger.Info("Creating session cookie with session id value")
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
@@ -67,5 +75,6 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 
 	l := CreateURI("/oauth/authorize", clientID, responseType, redirectURI, scope, state)
 
+	a.Logger.Info("Signin is done redirecting back to authroize")
 	http.Redirect(w, r, l, http.StatusFound)
 }

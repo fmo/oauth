@@ -27,3 +27,7 @@ func NewLogger() *Logger {
 func (l *Logger) Info(msg string) {
 	l.infoLogger.Println(msg)
 }
+
+func (l *Logger) Debug(msg string, args ...any) {
+	l.infoLogger.Printf(msg, args...)
+}
