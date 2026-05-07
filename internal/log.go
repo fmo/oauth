@@ -29,5 +29,5 @@ func (l *Logger) Info(msg string) {
 }
 
 func (l *Logger) Debug(msg string, args ...any) {
-	l.infoLogger.Printf(msg, args...)
+	l.debugLogger.Printf(msg, args...)
 }
