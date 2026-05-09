@@ -17,10 +17,10 @@ func NewLogger() *Logger {
 	logFlags := log.Lshortfile | log.Ldate | log.Lmsgprefix
 
 	return &Logger{
-		debugLogger:   log.New(os.Stdout, "DEBUG   ", logFlags),
-		infoLogger:    log.New(os.Stdout, "INFO    ", logFlags),
+		debugLogger:   log.New(os.Stdout, "DEBUG ", logFlags),
+		infoLogger:    log.New(os.Stdout, "INFO ", logFlags),
 		warningLogger: log.New(os.Stdout, "WARNING ", logFlags),
-		errorLogger:   log.New(os.Stderr, "ERROR   ", logFlags),
+		errorLogger:   log.New(os.Stderr, "ERROR ", logFlags),
 	}
 }
 

@@ -15,7 +15,7 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 	scope := r.URL.Query().Get("scope")
 	state := r.URL.Query().Get("state")
 
-	a.Logger.Debug("\n\tResponse Type: %s\n\tRedirecURI: %s\n\tClient ID: %s\n\tScope: %s\n\tState: %s", responseType, redirectURI, clientID, scope, state)
+	a.Logger.Debug("URI Params\n\tResponse Type: %s\n\tRedirecURI: %s\n\tClient ID: %s\n\tScope: %s\n\tState: %s", responseType, redirectURI, clientID, scope, state)
 
 	if r.Method == "GET" {
 		a.Logger.Info("Creating signing uri with encoding")

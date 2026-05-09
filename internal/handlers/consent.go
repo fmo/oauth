@@ -6,6 +6,8 @@ import (
 )
 
 func (a *App) Consent(w http.ResponseWriter, r *http.Request) {
+	a.Logger.Info("===== Consent Handler =====")
+
 	clientID := r.URL.Query().Get("client_id")
 	responseType := r.URL.Query().Get("response_type")
 	redirectURI := r.URL.Query().Get("redirect_uri")
@@ -34,7 +36,9 @@ func (a *App) Consent(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	a.Logger.Info("Creating consent uri")
 	consentURI := CreateURI("/consent", clientID, responseType, redirectURI, scope, state)
+	a.Logger.Debug("Consent uri: %s", consentURI)
 
 	template, err := template.ParseFiles("templates/consent.html")
 	if err != nil {

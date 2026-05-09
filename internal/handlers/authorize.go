@@ -45,7 +45,9 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	a.Logger.Info("User already signed in")
 	a.Logger.Debug("User id is: %s", userID)
 
+	a.Logger.Info("Checking user consent")
 	if _, ok := a.Consents[userID]; !ok {
+		a.Logger.Info("User consent is not given, redirect consent page")
 		consentURI := CreateURI("/consent", clientID, responseType, redirectURI, scope, state)
 		http.Redirect(w, r, consentURI, http.StatusFound)
 		return
