@@ -20,14 +20,14 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a.Logger.Info("Client id found")
-	a.Logger.Debug("Client Id: %s", clientID)
+	a.Logger.WithField("client_id", clientID).Debug("Client Id")
 
 	if a.Clients[clientID].RedirectURI != redirectURI {
 		http.Error(w, "redirect url is not matching", http.StatusBadRequest)
 		return
 	}
 	a.Logger.Info("Redirect url is matching")
-	a.Logger.Debug("Redirect url: %s", redirectURI)
+	a.Logger.WithField("redirect_uri", redirectURI).Debug("Redirect URI")
 
 	if responseType != "code" {
 		http.Error(w, "response type is not valid", http.StatusBadRequest)
@@ -44,7 +44,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a.Logger.Info("User already signed in")
-	a.Logger.Debug("User id is: %s", userID)
+	a.Logger.WithField("user_id", userID).Debug("User Id")
 
 	a.Logger.Info("Checking user consent")
 	if _, ok := a.Consents[userID]; !ok {
