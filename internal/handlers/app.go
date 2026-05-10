@@ -3,7 +3,7 @@ package handlers
 import (
 	"time"
 
-	"github.com/fmo/oauth/internal"
+	"github.com/sirupsen/logrus"
 )
 
 type App struct {
@@ -13,7 +13,7 @@ type App struct {
 	Users        map[string]string
 	Consents     map[string]Consent
 	AccessTokens map[string]AccessToken
-	Logger       *internal.Logger
+	Logger       *logrus.Logger
 }
 
 type Client struct {
@@ -41,7 +41,7 @@ type AccessToken struct {
 	ExpiresAt time.Time
 }
 
-func NewApp(logger *internal.Logger) *App {
+func NewApp(logger *logrus.Logger) *App {
 	users := map[string]string{
 		"fmo": "123123",
 	}
