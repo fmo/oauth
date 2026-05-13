@@ -8,7 +8,8 @@ import (
 )
 
 func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
-	a.Logger.Info("===== Signin Handler =====")
+	a.Logger.Info("===== Signin Handler Start =====")
+	defer a.Logger.Info("===== Signin Handler End =====")
 
 	a.Logger.Info("Getting uri params")
 	responseType := r.URL.Query().Get("response_type")
@@ -29,9 +30,9 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 		a.Logger.Info("Creating signing uri with encoding")
 		signinURI := CreateURI("/signin", clientID, responseType, redirectURI, scope, state)
 
-		a.Logger.Debug("Signin uri: %s", signinURI)
+		a.Logger.WithField("signin_uri", signinURI).Debug("Created signin uri")
 
-		a.Logger.Info("Rendering signing template")
+		a.Logger.Info("Rendering signing template, user should fill the form")
 		template, _ := template.ParseFiles("templates/signin.html")
 		template.Execute(w, struct {
 			SubmitURI string
@@ -85,6 +86,5 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 
 	l := CreateURI("/oauth/authorize", clientID, responseType, redirectURI, scope, state)
 
-	a.Logger.Info("Signin is done redirecting back to authroize")
 	http.Redirect(w, r, l, http.StatusFound)
 }

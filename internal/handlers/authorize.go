@@ -6,7 +6,8 @@ import (
 )
 
 func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
-	a.Logger.Info("===== Authorize Handler =====")
+	a.Logger.Info("===== Authorize Handler Start =====")
+	defer a.Logger.Info("===== Authorize Handler End====")
 
 	a.Logger.Info("Getting uri parameters")
 	clientID := r.URL.Query().Get("client_id")
@@ -38,7 +39,6 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	userID, err := a.GetUserFromRequest(r, a.Sessions)
 	if err != nil {
 		a.Logger.Info("Session has not started, redirecting to signin page")
-		a.Logger.Info("=================================================")
 		loginURI := CreateURI("/signin", clientID, responseType, redirectURI, scope, state)
 		http.Redirect(w, r, loginURI, http.StatusFound)
 		return
@@ -49,7 +49,6 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	a.Logger.Info("Checking user consent")
 	if _, ok := a.Consents[userID]; !ok {
 		a.Logger.Info("User consent is not given, redirect consent page")
-		a.Logger.Info("\n")
 		consentURI := CreateURI("/consent", clientID, responseType, redirectURI, scope, state)
 		http.Redirect(w, r, consentURI, http.StatusFound)
 		return
@@ -68,6 +67,5 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 
 	a.Logger.Info("Redirecting back to Client with code")
 
-	a.Logger.Info("\n")
 	http.Redirect(w, r, rduri, http.StatusFound)
 }
