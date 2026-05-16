@@ -1,9 +1,8 @@
 package handlers
 
 import (
+	"log/slog"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 type App struct {
@@ -13,7 +12,7 @@ type App struct {
 	Users        map[string]string
 	Consents     map[string]Consent
 	AccessTokens map[string]AccessToken
-	Logger       *logrus.Logger
+	Logger       *slog.Logger
 }
 
 type Client struct {
@@ -41,7 +40,7 @@ type AccessToken struct {
 	ExpiresAt time.Time
 }
 
-func NewApp(logger *logrus.Logger) *App {
+func NewApp(logger *slog.Logger) *App {
 	users := map[string]string{
 		"fmo": "123123",
 	}

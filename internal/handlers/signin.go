@@ -3,34 +3,23 @@ package handlers
 import (
 	"net/http"
 	"text/template"
-
-	"github.com/sirupsen/logrus"
 )
 
 func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
-	a.Logger.Info("===== Signin Handler Start =====")
-	defer a.Logger.Info("===== Signin Handler End =====")
-
-	a.Logger.Info("Getting uri params")
+	a.Logger.Info("Getting uri params from the request url")
 	responseType := r.URL.Query().Get("response_type")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	clientID := r.URL.Query().Get("client_id")
 	scope := r.URL.Query().Get("scope")
 	state := r.URL.Query().Get("state")
 
-	a.Logger.WithFields(logrus.Fields{
-		"response_type": responseType,
-		"redirect_uri":  redirectURI,
-		"client_id":     clientID,
-		"scope":         scope,
-		"state":         state,
-	}).Debug("URI Params")
+	a.Logger.Debug("URI Params", "response_type", responseType, "redirect_uri", redirectURI, "client_id", clientID, "scope", scope, "state", state)
 
 	if r.Method == "GET" {
 		a.Logger.Info("Creating signing uri with encoding")
 		signinURI := CreateURI("/signin", clientID, responseType, redirectURI, scope, state)
 
-		a.Logger.WithField("signin_uri", signinURI).Debug("Created signin uri")
+		a.Logger.Debug("Created signin uri", "signin_uri", signinURI)
 
 		a.Logger.Info("Rendering signing template, user should fill the form")
 		template, _ := template.ParseFiles("templates/signin.html")
@@ -84,7 +73,7 @@ func (a *App) Signin(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 	})
 
+	a.Logger.Info("Session cookie is created, now moving back to authorize")
 	l := CreateURI("/oauth/authorize", clientID, responseType, redirectURI, scope, state)
-
 	http.Redirect(w, r, l, http.StatusFound)
 }

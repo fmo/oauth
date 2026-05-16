@@ -6,10 +6,7 @@ import (
 )
 
 func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
-	a.Logger.Info("===== Authorize Handler Start =====")
-	defer a.Logger.Info("===== Authorize Handler End====")
-
-	a.Logger.Info("Getting uri parameters")
+	a.Logger.Info("Getting uri parameters from the request url")
 	clientID := r.URL.Query().Get("client_id")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	responseType := r.URL.Query().Get("response_type")
@@ -20,15 +17,13 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "client is not defined", http.StatusBadRequest)
 		return
 	}
-	a.Logger.Info("Client id found")
-	a.Logger.WithField("client_id", clientID).Debug("Client Id")
+	a.Logger.Info("Client id found", "client_id", clientID)
 
 	if a.Clients[clientID].RedirectURI != redirectURI {
 		http.Error(w, "redirect url is not matching", http.StatusBadRequest)
 		return
 	}
-	a.Logger.Info("Redirect url is matching")
-	a.Logger.WithField("redirect_uri", redirectURI).Debug("Redirect URI")
+	a.Logger.Info("Redirect url is matching", "redirect_uri", redirectURI)
 
 	if responseType != "code" {
 		http.Error(w, "response type is not valid", http.StatusBadRequest)
@@ -43,8 +38,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, loginURI, http.StatusFound)
 		return
 	}
-	a.Logger.Info("User already signed in")
-	a.Logger.WithField("user_id", userID).Debug("User Id")
+	a.Logger.Info("Session cookie and session record found in the system so user already signed in", "user_id", userID)
 
 	a.Logger.Info("Checking user consent")
 	if _, ok := a.Consents[userID]; !ok {
